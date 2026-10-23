@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4caf8f">
+<title>Ek Gıda Planı</title>
+<style>
+:root{--bg:#f6faf8;--card:#fff;--ink:#1f2d2a;--mut:#6b7c77;--pri:#4caf8f;--pri2:#e3f4ee;--warn:#f59e0b;--bad:#e5484d;--line:#e2ebe8}
+@media(prefers-color-scheme:dark){:root{--bg:#10181a;--card:#182326;--ink:#e8f1ee;--mut:#93a8a2;--pri2:#1d3a33;--line:#263538}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:84px;line-height:1.45}
+header{padding:calc(env(safe-area-inset-top) + 18px) 18px 14px;background:linear-gradient(135deg,#4caf8f,#7fd3b5);color:#fff}
+header h1{margin:0;font-size:22px}header p{margin:4px 0 0;opacity:.9;font-size:14px}
+.bar{height:8px;background:rgba(255,255,255,.35);border-radius:8px;margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;background:#fff;width:0;transition:width .3s}
+main{padding:14px;max-width:680px;margin:auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 6px;font-size:16px}
+.mut{color:var(--mut);font-size:13px}
+.meal{display:flex;gap:10px;padding:8px 0;border-top:1px dashed var(--line);font-size:14px}
+.meal:first-of-type{border-top:0}
+.meal b{min-width:68px;color:var(--pri)}
+.tag{display:inline-block;background:var(--pri2);color:var(--pri);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600;margin:2px 4px 2px 0}
+.tag.new{background:#fff3d6;color:#a16207}
+.weeks{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.weeks button{flex:1;min-width:76px}
+button,input[type=date]{font:inherit}
+button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:9px 12px;cursor:pointer}
+button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.day{display:flex;gap:12px;align-items:center;cursor:pointer}
+.num{width:42px;height:42px;border-radius:12px;background:var(--pri2);color:var(--pri);display:grid;place-items:center;font-weight:700;flex:none}
+.day.done .num{background:var(--pri);color:#fff}
+.day.today{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri2)}
+.day .t{flex:1;min-width:0}.day .t b{display:block;font-size:15px}.day .t span{font-size:13px;color:var(--mut)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(env(safe-area-inset-bottom) + 6px)}
+nav button{flex:1;border:0;background:none;font-size:11px;color:var(--mut);display:flex;flex-direction:column;gap:2px;align-items:center;padding:6px 2px}
+nav button span{font-size:20px}nav button.on{color:var(--pri);background:none}
+.fg{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:9px 0;border-top:1px dashed var(--line);font-size:14px}
+.fg:first-of-type{border-top:0}
+.chk{width:34px;height:34px;padding:0;font-size:16px}
+.chk.ok{background:var(--pri);color:#fff;border-color:var(--pri)}.chk.rx.ok{background:var(--bad);border-color:var(--bad)}
+.rule{padding:8px 0;border-top:1px dashed var(--line);font-size:14px}.rule:first-of-type{border-top:0}
+.warn{background:#fff7e6;border-color:#f6d58a;color:#7a5200}
+.danger{background:#fdeceb;border-color:#f2b8b5;color:#8a1c1c}
+@media(prefers-color-scheme:dark){.warn{background:#2b2411;border-color:#5a4a1a;color:#f2d28a}.danger{background:#341a1a;border-color:#6b2a2a;color:#f4b4b4}.tag.new{background:#3a2f12;color:#f2c66d}}
+details.g{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:10px;overflow:hidden}
+details.g summary{padding:14px;font-weight:600;font-size:15px;cursor:pointer;list-style:none;display:flex;gap:10px;align-items:center}
+details.g summary::-webkit-details-marker{display:none}
+details.g summary::after{content:"▾";margin-left:auto;color:var(--mut)}
+details.g[open] summary::after{content:"▴"}
+details.g .body{padding:0 14px 12px}
+.pt{padding:8px 0;border-top:1px dashed var(--line);font-size:14px}
+.pt:first-child{border-top:0}
+.src{display:inline-block;font-size:11px;background:var(--pri2);color:var(--pri);padding:1px 8px;border-radius:12px;margin-left:4px;font-weight:600;white-space:nowrap}
+.conf{font-size:13px;background:#fff3d6;color:#7a5200;border-radius:10px;padding:8px 10px;margin-top:6px}
+@media(prefers-color-scheme:dark){.conf{background:#3a2f12;color:#f2d28a}}
+a{color:var(--pri)}
+.srcl li{margin:8px 0;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🥣 Ek Gıda Planı</h1>
+  <p id="sub">30 günlük başlangıç programı</p>
+  <div class="bar"><i id="bar"></i></div>
+</header>
+<main id="app"></main>
+<nav>
+  <button data-t="plan" class="on"><span>📅</span>Plan</button>
+  <button data-t="foods"><span>🥕</span>Gıdalar</button>
+  <button data-t="guide"><span>📚</span>Rehber</button>
+  <button data-t="safe"><span>⚠️</span>Güvenlik</button>
+  <button data-t="set"><span>⚙️</span>Ayarlar</button>
+</nav>
+<script>
+// Gün verisi: k=kahvaltı, l=öğle, a=ara öğün, s=akşam, n=yeni gıda, t=not
+const B="Anne sütü / mama";
+const SD="Öğleye benzer: hayvansal gıda + sebze, 3-4 yemek kaşığı";
+const D=[
+{l:"Pürüzsüz kabak püresi: yarım çay kaşığıyla başla, 1-2 çay kaşığına kadar çık",n:"Kabak",t:"Önce biraz anne sütü/mama, sonra katı, sonra yine süt (AAP). Reddederse zorlama; süte dön, başka gün tekrar dene."},
+{l:"Kabak püresi 2-3 çay kaşığı",n:"Kabak",t:"Ağızda tepki, döküntü, kusma, dışkı değişimi var mı izle."},
+{l:"Dana eti (iyi pişmiş, pürüzsüz) + kabak püresi 1-2 çay kaşığı",n:"Dana eti",t:"Demir ve çinko için erken verilir. WHO hayvansal gıdanın her gün verilmesini önerir (güçlü öneri)."},
+{l:"Dana eti + kabak püresi 1 yemek kaşığı",n:"Dana eti"},
+{l:"Havuç püresi + et püresi, toplam 1-2 yemek kaşığı",n:"Havuç"},
+{l:"Havuç + et + kabak püresi 2 yemek kaşığı",n:"Havuç"},
+{l:"Favori karışımın 2 yemek kaşığı",t:"Gözlem günü: yeni gıda yok. Tüm bebek tepkisini değerlendir."},
+{l:"Sebze + et püresi 2 yemek kaşığı",a:"Şekersiz, tam yağlı yoğurt 1-2 çay kaşığı",n:"Yoğurt"},
+{l:"Sebze + et püresi 2-3 yemek kaşığı",a:"Yoğurt 1 yemek kaşığı",n:"Yoğurt"},
+{k:"İyi pişmiş TAM yumurta (sarısı + beyazı), ezilmiş, 1/4 yumurta",l:"Sebze püresi 2-3 yemek kaşığı",n:"Yumurta",t:"Güncel öneri pişmiş yumurtayı erken tanıtmak (AAP). Şiddetli egzama veya yumurta alerjisi öyküsü varsa ÖNCE doktora danış."},
+{k:"Pişmiş tam yumurta 1/3 (ezilmiş)",l:"Sebze + et püresi 3 yemek kaşığı",n:"Yumurta",t:"Çiğ/az pişmiş yumurta verme."},
+{l:"Süzülmüş kırmızı mercimek püresi 1-2 yemek kaşığı",n:"Kırmızı mercimek",t:"Baklagiller sık verilmeli (WHO, koşullu öneri)."},
+{l:"Mercimek + sebze püresi 3 yemek kaşığı",n:"Kırmızı mercimek"},
+{l:"Favori öğün 3 yemek kaşığı",a:"Yoğurt 1-2 yemek kaşığı",t:"Gözlem günü. Bu haftadan sonra kıvam yavaş yavaş pütürlüye geçer."},
+{l:"Hafif pütürlü sebze püresi 3 yemek kaşığı",a:"Pürüzsüz fıstık ezmesi (şekersiz, tuzsuz) 1 çay kaşığı, 1-2 yemek kaşığı yoğurt/püre içinde iyice sulandırılmış",n:"Fıstık ezmesi",t:"ASLA bütün/iri fıstık veya topak ezme verme. Yüksek riskli bebekte (şiddetli egzama, yumurta alerjisi) önce doktor. Kaynak: AAP, ESPGHAN."},
+{l:"Sebze + et püresi 3 yemek kaşığı",a:"Sulandırılmış fıstık ezmesi 2 çay kaşığı (yoğurt/püre içinde)",n:"Fıstık ezmesi",t:"AAP örnek porsiyonu: yaklaşık 2 çay kaşığı fıstık ezmesi. Yeni alerjenleri düzenli vermeye devam et."},
+{l:"Hafif pütürlü sebze + et püresi 3-4 yemek kaşığı",a:"Ezilmiş muz 2 yemek kaşığı",n:"Muz"},
+{l:"Pütürlü sebze + mercimek 3-4 yemek kaşığı",a:"Muz 2-3 yemek kaşığı",n:"Muz"},
+{k:"Yumuşak haşlanmış küçük makarna (ezilmiş) 2 yemek kaşığı + yoğurt",l:"Sebze + et 3-4 yemek kaşığı",n:"Makarna (gluten)",t:"ESPGHAN 2024: gluten 4-12. ay arasında verilebilir; geciktirmek çölyak riskini azaltmaz."},
+{k:"Makarna 3 yemek kaşığı + sebze",l:"Sebze + tavuk veya et 3-4 yemek kaşığı",n:"Makarna (gluten)"},
+{l:"Favori öğün 4 yemek kaşığı",t:"Gözlem günü. Hazırsa yumuşak parmak yiyecek dene (yumuşak muz dilimi, çok yumuşak haşlanmış havuç çubuğu). Her zaman gözetim altında."},
+{l:"İnce doğranmış/ezilmiş tavuk veya hindi + sebze 3-4 yemek kaşığı",n:"Tavuk/hindi"},
+{l:"Tavuk + sebze, pütürlü 4 yemek kaşığı",n:"Tavuk/hindi"},
+{l:"Haşlanmış brokoli + patates ezmesi 3-4 yemek kaşığı",n:"Brokoli"},
+{l:"Brokoli + et ezmesi 4 yemek kaşığı",n:"Brokoli"},
+{l:"Çatalla ezilmiş sebze + et 4 yemek kaşığı",a:"Haşlanmış elma veya armut (yumuşak, ezilmiş) 2-3 yemek kaşığı",n:"Elma/armut"},
+{l:"Çatalla ezilmiş sebze + mercimek 4 yemek kaşığı",a:"Elma/armut 3 yemek kaşığı",n:"Elma/armut"},
+{k:"Yulaf lapası (su veya anne sütü ile) 3 yemek kaşığı + ezilmiş meyve",l:"Sebze + tavuk 4 yemek kaşığı",n:"Yulaf"},
+{k:"Yulaf + meyve 3-4 yemek kaşığı",l:"Sebze + et/mercimek 4-5 yemek kaşığı",n:"Yulaf"},
+{k:"Pişmiş yumurta 1/3 veya yoğurt + yulaf",l:"Et/tavuk + sebze 4-5 yemek kaşığı",a:"Meyve + yoğurt",t:"Değerlendirme: hangi gıdalar sevildi, hangilerine tepki oldu? Yumurta, fıstık, yoğurt, et gibi gıdalar düzenli (haftalık) kalmalı. 2. ay: pütürlü ve parmak yiyeceklere ilerle, öğünleri 3'e çıkar. Doktorunla gözden geçir."}
+];
+const GROUPS={
+"Sebzeler":["Kabak","Havuç","Brokoli"],
+"Meyveler":["Muz","Elma/armut"],
+"Tahıl / Baklagil":["Kırmızı mercimek","Makarna (gluten)","Yulaf"],
+"Protein / Süt ürünü / Alerjen":["Dana eti","Tavuk/hindi","Yumurta","Yoğurt","Fıstık ezmesi"]
+};
+// Rehber: araştırma özeti. [metin, kaynak etiketi]
+const R=[
+{i:"⏰",h:"Ne zaman başlanır?",p:[
+["Ek gıdaya 6. ayda (180. gün), emzirmeye devam ederken başlanır. Emzirme 2 yaşa veya daha uzun süre sürdürülür.","WHO 2023 · güçlü öneri"],
+["Avrupa'da kabul edilen aralık 17-26. hafta: ek gıda 4. aydan önce başlamamalı, 6. aydan sonraya da geciktirilmemeli.","ESPGHAN 2017"],
+["Hazır olma belirtileri: başını dik tutma ve destekle oturma, ağzını açıp yiyeceğe uzanma, kaşıktaki yiyeceği ağzın arkasına taşıyabilme. Dilini dışarı itiyorsa biraz daha zaman ver.","AAP"],
+["Gelişimi normal bebeklerde 6. aydan önce başlanmaz; 10. aydan sonraya kalırsa yeme davranışı sorunları görülebilir.","T.C. Sağlık Bakanlığı HSGM kitabı"]
+]},
+{i:"🍽️",h:"Neler verilmeli?",p:[
+["Hayvansal gıdalar (et, balık, yumurta) her gün tüketilmeli.","WHO 2023 · güçlü"],
+["Meyve ve sebze her gün tüketilmeli.","WHO 2023 · güçlü"],
+["Baklagiller, kuruyemişler (uygun formda) ve tohumlar sık sık verilmeli.","WHO 2023 · koşullu"],
+["Tüm bebeklere demirden zengin gıdalar (et ve/veya demirle zenginleştirilmiş gıdalar) verilmeli.","ESPGHAN 2017"],
+["İlk gıdalar tek bileşenli olsun; sebze veya meyveyi hangisinin önce verildiği sonraki zevki belirlemez. Demir ve çinko için et veya demirle zenginleştirilmiş tahıl ekle.","AAP"],
+["İlk günlerde yarım kaşık veya daha azıyla başla; önce biraz süt, sonra katı, sonra yine süt. Bebek yüzünü çevirirse zorlama. Biberona tahıl koyma.","AAP"],
+["Aileler için kaba bir hedef: zamanla öğün başına yaklaşık 120 ml (küçük bir kavanoz) civarı.","AAP"]
+]},
+{i:"🥜",h:"Alerjen gıdalar: erken mi, geç mi?",p:[
+["Alerjen gıdaları geciktirmek alerjiyi önlemez. Sağlıklı bebeklerde yumurta ve fıstık ürünleri yaklaşık 4-6. ayda tanıtılabilir; yumuşak alerjen gıdaları 4-6 aydan sonraya ertelemek önerilmiyor.","AAP"],
+["Alerjenler (yumurta, fıstık, süt, buğday, susam, soya, balık, kabuklu deniz ürünleri) düşük riskli gıdalardan sonra, tek tek, küçük miktarla başlanıp artırılarak verilir.","AAP"],
+["Yüksek riskli bebekler (şiddetli/kalıcı egzama veya yumurta alerjisi): fıstık 4-11. ay arasında, uzman değerlendirmesinden sonra tanıtılmalı.","ESPGHAN 2017 · AAP"],
+["Fıstık ezmesini az miktarda anne sütü/mama, tahıl, meyve püresi veya yoğurtla inceltip ver. Bütün fıstık ve kuruyemişler yaklaşık 4 yaşına kadar boğulma riski.","AAP"],
+["ABD'de 2017'den sonra erken fıstık tanıtımı önerildi; 2021'de bu yumurta ve diğer alerjenlere genişletildi. 125 bin çocuklu 2025 Pediatrics çalışmasında 3 yaş altında genel besin alerjisi %36, fıstık alerjisi %43 azaldı (%1,46 → %0,93 ve %0,79 → %0,45). Çalışma neden-sonuç kanıtlamıyor.","Pediatrics 2025 (haber özeti)"],
+["Türkiye'deki 300 çocuk doktoruyla yapılan anket: alerjik bebeklerde yumurta ve balık daha geç veriliyor. Yazarlar, besin alerjisi kesinleşmemiş bebeklerde yaygın alerjenleri geciktirmemeyi öneriyor.","Frontiers in Pediatrics 2025"],
+["Yeni gıda aralığı: AAP bir sayfasında her yeni tek bileşenli gıda arasında 3-5 gün, alerjen sayfasında en az 1 gün bekle diyor. Türkiye'de 3 gün sık öneriliyor ama güçlü kanıta dayanmıyor. Bu planda 2 gün kullandım; doktorun farklı söylerse ona uy.","AAP · Frontiers 2025"],
+["Sağlık Bakanlığı kitabı daha eski bir yaklaşımla önce yumurta sarısını (6. ay), tam yumurtayı 8. ayda öneriyor ve alerji öyküsü olanlara yumurta, fıstık, balık gibi besinleri 12. aydan önce vermeyin diyor. Güncel uluslararası öneriyle farklı; kendi bebeğin için doktorunla netleştir.","HSGM kitabı vs. AAP"]
+],c:"Bu konuda kaynaklar arasında fark var. Ailede alerji, egzama veya önceki reaksiyon varsa karar çocuk doktoruyla verilmeli."},
+{i:"💊",h:"D vitamini ve demir",p:[
+["D vitamini: ilk günden itibaren her gün 400 IU, 1 yaşına kadar; anne sütü veya mama fark etmez. 1 yaşından sonra günlük ihtiyaç 600 IU.","T.C. Sağlık Bakanlığı D Vitamini Rehberi · AAP"],
+["Koruyucu amaçla yüksek doz D vitamini ampulü verme; zehirlenme riski var.","Sağlık Bakanlığı D Vit. Rehberi"],
+["Demir: AAP'ye göre anne sütü alan (kısmen/tamamen) bebeklere 4. aydan itibaren, demirli ek gıdalara geçene kadar günde 1 mg/kg oral demir önerilir. Tüm bebekler 12. ayda demir eksikliği için taranmalı.","AAP"],
+["Bu yüzden demirli gıdalar (et, mercimek, zenginleştirilmiş gıda) planın başından itibaren verilir. Demir takviyesi konusunda çocuk doktoruna danış.","ESPGHAN 2017 · AAP"]
+]},
+{i:"🌾",h:"Gluten",p:[
+["Gluten 4-12. aylar arasında herhangi bir zamanda tanıtılabilir; zamanlama çölyak riskini değiştirmiyor. Emzirmek de çölyak riskini azaltmıyor. İlk haftalarda büyük miktarlardan kaçın.","ESPGHAN 2024 · ESPGHAN 2017"],
+["Bakanlık kitabı: gluten içeren tahıllar 6. aydan önce verilmez.","HSGM kitabı"]
+]},
+{i:"🥛",h:"Süt, su, meyve suyu, çay, bal",p:[
+["İnek sütü 12. aya kadar ana içecek olarak verilmez; yemek hazırlığında az miktarda kullanılabilir. Yoğurt ve peynir (pastörize) uygun.","ESPGHAN 2017 · HSGM kitabı"],
+["Emzirilmeyen 6-11 aylık bebekler formül veya hayvan sütü alabilir (WHO, koşullu); 6-11 ay için tam yağlı süt tercih edilir. 12-23 ayda hayvan sütü, devam sütü önerilmez.","WHO 2023"],
+["Şekerli içecekler ve tatlandırıcılar verilmez; %100 meyve suyu sınırlanır. AAP 12 ay altına meyve suyunu hiç önermiyor; Bakanlık kitabı 6. ayda 50-100 ml diyor (eski yaklaşım). Güvenli tercih: 1 yaşa kadar verme.","WHO 2023 · AAP · ESPGHAN"],
+["Sağlıklı bebeğe ek su şart değil; katı başlayınca açık bardak, pipetli veya sippy bardakla günde en fazla 1 su bardağı (yaklaşık 240 ml) verilebilir. Sıcak havalarda küçük miktarlar yardımcı olabilir.","AAP"],
+["Çay ve bitki çayı demir emilimini azaltır; bitki çaylarının güvenliği yeterince araştırılmamıştır. (Türkiye'de pediatristlerin %65'i bitki çayı öneriyor; bu yaygın uygulama, kanıta dayalı bir öneri değil.)","HSGM kitabı · Frontiers 2025"],
+["Bal 12 aya kadar verilmez (botulizm).","ESPGHAN 2017 · HSGM kitabı"]
+]},
+{i:"🥄",h:"Kıvam, kaşıkla besleme ve parmak yiyecek (BLW)",p:[
+["Kıvam bebeğe uygun ilerlemeli; uzun süre sadece püre verilmemeli. En geç 8-10. ayda topaklı yiyecekler, parmak yiyecekler ve kendi kendine yeme başlamalı; 12. ayda ağırlıklı olarak bardaktan içmeli.","ESPGHAN 2017"],
+["Kaşıkla mı, bebeğin kendi yemesiyle mi başlanacağı konusunda yeterli kanıt yok.","ESPGHAN 2017"],
+["Sağlık Bakanlığı kıvam tablosu: 6-7. ay yumuşak ezme/sıvı, 7-8. ay pütürsüz püre, 8-12. ay çatalla ezilmiş, 12-18. ay kolay çiğnenebilen tüm yiyecekler.","HSGM kitabı"],
+["Türkiye'de pediatristlerin %76,7'si BLW, %38'i demir odaklı BLISS yöntemini öneriyor. BLW'de demir ve enerji alımı yetersiz kalabilir diye endişe var; BLISS demirli gıdaları vurgular.","Frontiers in Pediatrics 2025"],
+["Parmak yiyecekler için bebek oturabilmeli ve nesneleri ağzına götürebilmeli; yumuşak, küçük, yutması kolay parçalar ver (muz, çırpılmış yumurta, iyi pişmiş makarna, iyi pişmiş doğranmış tavuk).","AAP"],
+["Bu planda: 1-14. gün pürüzsüz püre, 15. günden itibaren hafif pütürlü, 21. günden itibaren hazırsa yumuşak parmak yiyecekler.","Plan notu"]
+]},
+{i:"📈",h:"Öğün sayısı, miktar ve duyarlı beslenme",p:[
+["Bebeğin açlık ve tokluk işaretlerine karşılık ver; yeme sırasında kendi başına yemesine izin ver. Çocuk 6-23 ay arasında duyarlı (responsive) beslenmeli.","WHO 2023 · güçlü"],
+["Beslenmeyi rahatlatmak veya ödül olarak kullanma.","ESPGHAN 2017"],
+["Bakanlık kitabı: emziren anne ve sağlıklı bebekte öğün sayısı 6-8. ay 2-3, 9-11. ay 3-4, 12-24. ay 3-4. Bu planda 1-14. gün 1 öğün (+1 ara), 15. günden sonra 2 öğün.","HSGM kitabı"],
+["Ek gıdalardan gelen enerji 6. aylıkken toplam enerjinin yarısını geçmemeli; anne sütü/mama temel besin kalır.","HSGM kitabı"],
+["Protein: ek gıda döneminde enerji alımının %15'ini geçmemeli.","ESPGHAN 2017"]
+]},
+{i:"🍚",h:"Pirinç, arsenik ve ticari ürünler",p:[
+["Pirinç içeceği (pirinç sütü) bebeklere verilmemeli; inorganik arsenik riski.","ESPGHAN 2017"],
+["Sadece pirinç mamasına güvenme; yulaf, arpa, çok tahıllı seçenekler de olsun. Pirinci bol suda pişirip süzmek inorganik arsenikte %40-60 azalma sağlayabilir.","FDA"],
+["Zenginleştirilmiş ticari tahıllar ve unlar mikro besin alımını artırabilir, fakat tüketimleri teşvik edilmemeli.","WHO 2023"]
+]},
+{i:"🌱",h:"Vejetaryen / vegan beslenme",p:[
+["Vegan beslenme ancak uygun tıbbi/diyetisyen gözetiminde uygulanmalı. Dikkat edilecek besinler: B12, D vitamini, demir, çinko, folat, n-3 yağlar, protein, kalsiyum.","ESPGHAN 2017"]
+]}
+];
+const SOURCES=[
+["WHO. Guideline for complementary feeding of infants and young children 6-23 months of age (2023)","https://www.who.int/publications/i/item/9789240081864"],
+["Guideline Central: WHO 2023 özeti ve öneri güçleri","https://www.guidelinecentral.com/guideline/3304206/"],
+["ESPGHAN Committee on Nutrition. Complementary Feeding: A Position Paper (2017)","https://www.espghan.org/dam/jcr:3d960daa-e2f3-499f-9df9-2da682976cec/2017%20Complementary_Feeding__A_Position_Paper_by_the.21.pdf"],
+["ESPGHAN. Early diet and the risk of coeliac disease: 2024 position paper","https://iris.unina.it/retrieve/f476f175-f932-4328-97c1-8e76ecfacb96/Early%20diet%20and%20the%20risk%20of%20coeliac%20disease.%20An%20update%202024%20position%20paper%20by%20the%20ESPGHAN%20special%20interest%20group%20on%20coeliac%20disease.pdf"],
+["AAP HealthyChildren: Starting solid foods","https://www.healthychildren.org/English/ages-stages/baby/feeding-nutrition/Pages/Starting-Solid-Foods.aspx"],
+["AAP HealthyChildren: Introducing allergenic foods","https://www.healthychildren.org/English/healthy-living/nutrition/Pages/when-to-introduce-egg-peanut-butter-and-other-common-food-allergens-to-your-baby-food-allergy-prevention-tips.aspx"],
+["AAP HealthyChildren: Vitamin and iron supplements","https://www.healthychildren.org/English/ages-stages/baby/Feeding-nutrition/Pages/Vitamin-Iron-Supplements.aspx"],
+["Gabryszewski ve ark. Pediatrics, Ekim 2025 (Allergic Living haber özeti)","https://www.allergicliving.com/2025/10/22/early-peanut-introduction-linked-to-drop-in-child-food-allergies/"],
+["Karabayır ve ark. Clinical variability in complementary feeding counseling in Türkiye. Front Pediatr 2025","https://www.frontiersin.org/journals/pediatrics/articles/10.3389/fped.2025.1646667/full"],
+["T.C. Sağlık Bakanlığı HSGM. D Vitamini Uygulama Rehberi","https://hsgm.saglik.gov.tr/depo/Yayinlarimiz/Rehberler/D_vitamini_uygulama_rehberi.pdf"],
+["T.C. Sağlık Bakanlığı HSGM. Bebek Beslenmesi (Köksal ve ark.)","https://hsgm.saglik.gov.tr/depo/birimler/saglikli-beslenme-ve-hareketli-hayat-db/Dokumanlar/Kitaplar/bebek-beslenmesi.pdf"],
+["T.C. Sağlık Bakanlığı. Türkiye Beslenme Rehberi (TÜBER) 2022","https://hsgm.saglik.gov.tr/media/attachments/2025/05/12/turkiye-beslenme-rehberi-2022.pdf"],
+["FDA. Infant rice cereal ve inorganik arsenik","https://www.fda.gov/news-events/press-announcements/fda-proposes-limit-inorganic-arsenic-infant-rice-cereal"],
+["California Dept. of Public Health. Choking Prevention for Young Children","https://www.cdph.ca.gov/Programs/CFH/DMCAH/NUPA/Pages/Choking-Prevention-for-Young-Children.aspx"]
+];
+const RULES=[
+["🍯","1 yaşından önce bal verme (botulizm riski)."],
+["🧂","Tuz, şeker, tatlandırıcı ekleme; hazır çorba, bulyon, salça, şekerli içecek kullanma. (WHO güçlü öneri)"],
+["🥛","1 yaşa kadar inek sütünü ana içecek olarak verme; yemek içinde az miktarda ve yoğurt/peynir olarak uygun."],
+["🧃","1 yaşa kadar meyve suyu verme."],
+["🍵","Çay ve bitki çayı verme (demir emilimini azaltır, güvenliği yeterince araştırılmamış)."],
+["🍚","Pirinç içeceği verme; sadece pirinç mamasına güvenme."],
+["🌱","Çiğ/az pişmiş yumurta, çiğ et ve pastörize olmayan süt ürünleri verme. Bakla (favizm) 1 yaşa kadar önerilmez."],
+["⏱️","Yeni gıdayı tek başına, tek bileşenli ver ve tepkileri izle; aralığı doktorun belirlediği gibi uygula."],
+["💊","Günlük 400 IU D vitamini (ilk günden 1 yaşa kadar). Demir takviyesini doktorunla konuş. Yüksek doz D vitamini ampulü verme."],
+["🪑","Bebek dik otururken ye; yemek sırasında asla yalnız bırakma; arabada yedirme."],
+["🩺","Bu uygulama genel bir rehberdir ve doktor muayenesinin yerini tutmaz."]
+];
+const CHOKE=["Bütün fındık, ceviz ve kuruyemişler (yaklaşık 4 yaşa kadar)","Bütün üzüm, kiraz domates (dörde bölüp ver)","Sosis/hot dog, büyük et ve peynir parçaları","Patlamış mısır, sert/yapışkan şekerler, sakız, marshmallow","Çiğ sert sebze ve elma parçaları (pişir veya ince rendele)","Fıstık ezmesini topak halinde verme; mutlaka inceltilmiş","Yiyecekleri yaklaşık 'bozuk para' boyutunda parçalara kes (CDPH)"];
+const S=JSON.parse(localStorage.getItem("ekgida")||"{}");
+S.done=S.done||{};S.ok=S.ok||{};S.rx=S.rx||{};
+const save=()=>localStorage.setItem("ekgida",JSON.stringify(S));
+let tab="plan",week=1,open=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function todayIdx(){
+  if(!S.start)return -1;
+  const d=Math.floor((new Date().setHours(0,0,0,0)-new Date(S.start+"T00:00:00").getTime())/864e5);
+  return d>=0&&d<30?d:-1;
+}
+function progress(){
+  const n=Object.values(S.done).filter(Boolean).length;
+  $("#bar").style.width=(n/30*100)+"%";
+  const t=todayIdx();
+  $("#sub").textContent=n+" / 30 gün tamamlandı"+(t>=0?" · Bugün: "+(t+1)+". gün":"");
+}
+function dayCard(i){
+  const d=D[i],isOpen=open===i;
+  const sum=d.n?"Yeni: "+d.n:"Gözlem günü";
+  let h=`<div class="card"><div class="day ${S.done[i]?"done":""} ${todayIdx()===i?"today":""}" data-d="${i}">
+    <div class="num">${S.done[i]?"✓":i+1}</div>
+    <div class="t"><b>${i+1}. Gün</b><span>${esc(sum)}</span></div>
+    <div>${isOpen?"▲":"▼"}</div></div>`;
+  if(isOpen){
+    const s=d.s||(i>=14?SD:B);
+    h+=`<div style="margin-top:10px">
+    <div class="meal"><b>Kahvaltı</b><span>${esc(d.k||B)}</span></div>
+    <div class="meal"><b>Öğle</b><span>${esc(d.l)}</span></div>
+    <div class="meal"><b>Ara öğün</b><span>${esc(d.a||B)}</span></div>
+    <div class="meal"><b>Akşam</b><span>${esc(s)}</span></div>
+    ${d.n?`<span class="tag new">Yeni: ${esc(d.n)}</span>`:""}
+    ${d.t?`<p class="mut">💡 ${esc(d.t)}</p>`:""}
+    <button class="${S.done[i]?"on":""}" data-done="${i}">${S.done[i]?"✓ Tamamlandı":"Tamamlandı olarak işaretle"}</button></div>`;
+  }
+  return h+"</div>";
+}
+function viewPlan(){
+  let h=`<div class="card warn"><b>Plan nasıl çalışıyor?</b><br>6. ay başlangıcı için hazırlandı. Yeni gıda yaklaşık 2 günde bir tanıtılır (1-3 gün; doktorun farklı söylerse ona uy). Her gün anne sütü/mama devam eder, D vitamini unutma. Detaylar için <b>Rehber</b> sekmesine bak.</div>`;
+  h+=`<div class="weeks">`+[1,2,3,4,5].map(w=>`<button data-w="${w}" class="${w===week?"on":""}">${w<5?w+". Hafta":"Son 2 gün"}</button>`).join("")+`</div>`;
+  const from=(week-1)*7,to=Math.min(from+7,30);
+  for(let i=from;i<to;i++)h+=dayCard(i);
+  return h;
+}
+function viewFoods(){
+  let h=`<div class="card"><h3>Gıda listesi</h3><p class="mut">✓ denendi · ⚠ tepki oldu</p></div>`;
+  for(const g in GROUPS){
+    h+=`<div class="card"><h3>${g}</h3>`;
+    GROUPS[g].forEach(f=>{
+      const day=D.findIndex(x=>x.n===f)+1;
+      h+=`<div class="fg"><div>${esc(f)}<div class="mut">Plan: ${day}. gün</div></div>
+      <button class="chk ${S.ok[f]?"ok":""}" data-ok="${esc(f)}">✓</button>
+      <button class="chk rx ${S.rx[f]?"ok":""}" data-rx="${esc(f)}">⚠</button></div>`;
+    });
+    h+="</div>";
+  }
+  h+=`<div class="card"><h3>Planda olmayan, sonra eklenebilecekler</h3><p class="mut">Balık (kılçıksız, iyi pişmiş), karaciğer, nohut/fasulye ezmesi, peynir (pastörize), pütürlü yemekler. Bakanlık kitabı balığı 7. aydan, karaciğeri 8. aydan itibaren sayıyor.</p></div>`;
+  return h;
+}
+function viewGuide(){
+  let h=`<div class="card"><h3>Araştırma özeti</h3><p class="mut">Güncel uluslararası ve Türkiye kaynaklarından derlendi (WHO 2023, ESPGHAN, AAP, Sağlık Bakanlığı, 2025 çalışmaları). Her maddenin sonunda kaynağı yazıyor. Sağlık kararları için çocuk doktoruna danış.</p></div>`;
+  R.forEach((g,gi)=>{
+    h+=`<details class="g" ${gi===0?"open":""}><summary><span>${g.i}</span>${esc(g.h)}</summary><div class="body">`+
+      g.p.map(p=>`<div class="pt">${esc(p[0])} <span class="src">${esc(p[1])}</span></div>`).join("")+
+      (g.c?`<div class="conf">⚖️ ${esc(g.c)}</div>`:"")+`</div></details>`;
+  });
+  h+=`<div class="card"><h3>Kaynaklar</h3><ol class="srcl">`+SOURCES.map(s=>`<li><a href="${s[1]}" target="_blank" rel="noopener">${esc(s[0])}</a></li>`).join("")+`</ol>
+  <p class="mut">Not: Bazı makalelerin (Pediatrics 2025, AAP Pediatrics in Review 2025, JACI In Practice 2025, çok-dernekli WHO yanıtı) tam metnine erişilemedi; bunlardan alınan bilgiler sadece erişilebilen özetlere dayanıyor.</p></div>`;
+  return h;
+}
+function viewSafe(){
+  return `<div class="card warn"><b>Önemli:</b> Bebek destekle oturabiliyor, başını dik tutuyor ve dil itme refleksi azalmışsa 6. ayda ek gıdaya başlanır. Anne sütü/mama temel besin olmaya devam eder.</div>
+  <div class="card"><h3>Güvenlik kuralları</h3>${RULES.map(r=>`<div class="rule">${r[0]} ${esc(r[1])}</div>`).join("")}</div>
+  <div class="card"><h3>Boğulma riski olanlar</h3>${CHOKE.map(c=>`<div class="rule">⚠️ ${esc(c)}</div>`).join("")}<p class="mut">Kaynak: AAP, CDPH</p></div>
+  <div class="card"><h3>Yeni gıdada tepki</h3><div class="rule">Yeni gıdadan sonra ishal, döküntü veya kusma görülürse yeni gıdayı durdur ve çocuk doktoruna danış (AAP).</div></div>
+  <div class="card danger"><b>Acil durum:</b> Yüz/dudak şişmesi, nefes almada zorlanma, hırıltı, bayılma/halsizlik, tekrarlayan şiddetli kusma veya yaygın kurdeşen varsa hemen 112'yi ara.</div>`;
+}
+function viewSet(){
+  return `<div class="card"><h3>Başlangıç tarihi</h3><p class="mut">Seçersen "bugün" otomatik vurgulanır.</p>
+  <input type="date" id="start" value="${S.start||""}" style="width:100%;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)"></div>
+  <div class="card"><h3>Sıfırla</h3><p class="mut">Tüm işaretlemeleri siler.</p><button id="reset">Verileri sıfırla</button></div>`;
+}
+function render(){
+  const v={plan:viewPlan,foods:viewFoods,guide:viewGuide,safe:viewSafe,set:viewSet}[tab]();
+  $("#app").innerHTML=v;progress();
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===tab));
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-t],[data-w],[data-d],[data-done],[data-ok],[data-rx],#reset");
+  if(!t)return;
+  if(t.dataset.t){tab=t.dataset.t;window.scrollTo(0,0);}
+  else if(t.dataset.w){week=+t.dataset.w;open=null;}
+  else if(t.dataset.done!==undefined){const i=+t.dataset.done;S.done[i]=!S.done[i];save();}
+  else if(t.dataset.d!==undefined){const i=+t.dataset.d;open=open===i?null:i;}
+  else if(t.dataset.ok){S.ok[t.dataset.ok]=!S.ok[t.dataset.ok];save();}
+  else if(t.dataset.rx){S.rx[t.dataset.rx]=!S.rx[t.dataset.rx];save();}
+  else if(t.id==="reset"){if(confirm("Tüm veriler silinsin mi?")){localStorage.removeItem("ekgida");location.reload();return;}}
+  render();
+});
+document.addEventListener("change",e=>{if(e.target.id==="start"){S.start=e.target.value;save();const t=todayIdx();if(t>=0){week=Math.floor(t/7)+1;open=t;}progress();}});
+(function init(){const t=todayIdx();if(t>=0){week=Math.floor(t/7)+1;open=t;}render();})();
+</script>
+</body>
+</html>
